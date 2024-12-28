@@ -2,124 +2,62 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hello, World!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body>
-    <h1>Dog Glossary</h1>
-    <button id="button-random-dog">Show Random Dog</button>
-    <label for="input-breed">Breed</label>
-    <input type="text" id="input-breed" placeholder="Enter a breed" />
-    <button id="button-show-breed">Show Breed</button>
-    <button id="button-show-sub-breed">Show Sub-Breed</button>
-    <button id="button-show-all">Show All Breeds</button>
-    <div id="content"></div>
+  <body class="bg-gray-100 font-sans min-h-screen flex flex-col">
+    <!-- Header Section -->
+    <h1
+      class="text-center text-4xl md:text-6xl font-bold text-gray-800 p-6 border-b-4 border-gray-800"
+    >
+      Dog Glossary
+    </h1>
+
+    <!-- Main Content (Button and Input Section) -->
+    <div class="flex flex-wrap justify-center gap-4 p-4 bg-gray-200">
+      <!-- Random Dog Button -->
+      <button
+        class="text-xl border border-black m-1 p-2 px-6 text-white bg-blue-500 rounded hover:bg-blue-700 transition-all duration-300 ease-in-out"
+        id="button-random-dog"
+      >
+        Show Random Dog
+      </button>
+
+      <!-- Breed Input & Buttons -->
+      <input
+        class="text-xl border border-2 placeholder-gray-600 border-blue-500 m-1 p-2 px-6 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+        type="text"
+        id="input-breed"
+        placeholder="Enter a breed"
+      />
+      <button
+        class="text-xl border border-black m-1 p-2 px-6 text-white bg-green-500 rounded hover:bg-green-700 transition-all duration-300 ease-in-out"
+        id="button-show-breed"
+      >
+        Show Breed
+      </button>
+      <button
+        class="text-xl border border-black m-1 p-2 px-6 text-white bg-yellow-500 rounded hover:bg-yellow-700 transition-all duration-300 ease-in-out"
+        id="button-show-sub-breed"
+      >
+        Show Sub-Breed
+      </button>
+      <button
+        class="text-xl border border-black m-1 p-2 px-6 text-white bg-indigo-500 rounded hover:bg-indigo-700 transition-all duration-300 ease-in-out"
+        id="button-show-all"
+      >
+        Show All Breeds
+      </button>
+    </div>
+
+    <!-- Content Section (to display data) -->
+    <div
+      id="content"
+      class="flex-grow p-6 bg-white rounded-lg shadow-lg max-w-3xl mx-auto mt-6 overflow-auto"
+    >
+      <!-- Content will be inserted here dynamically -->
+    </div>
+    <script src="./script.js"></script>
   </body>
-  <script>
-    const content = document.getElementById("content");
-    const img = document.createElement("img");
-    const randomBtn = document.getElementById("button-random-dog");
-    const subBreedBtn = document.getElementById("button-show-sub-breed");
-    async function getRandomDog() {
-      content.innerHTML = "";
-      const response = await fetch("https://dog.ceo/api/breeds/image/random");
-      const data = await response.json();
-      img.src = data.message;
-      content.append(img);
-      return 0;
-    }
-
-    const showBreedBtn = document.getElementById("button-show-breed");
-    const inputBreed = document.getElementById("input-breed");
-    const showAllBtn = document.getElementById("button-show-all");
-
-    async function getBreedImages(breed) {
-      content.innerHTML = "";
-      try {
-        const response = await fetch(`https://dog.ceo/api/breed/${breed}/images
-    `);
-        const data = await response.json();
-        if (data.code === 404) {
-          throw new Error("Breed not found!");
-        }
-
-        img.src = data.message[0];
-        content.append(img);
-      } catch (error) {
-        const p = document.createElement("p");
-        p.innerText = "Breed not found!";
-        content.append(p);
-      }
-      return 0;
-    }
-
-    async function getSubBreed(breed) {
-      content.innerHTML = "";
-      try {
-        const response = await fetch(`https://dog.ceo/api/breed/${breed}/list
-`);
-        const data = await response.json();
-        if (data.code === 404) {
-          throw new Error("Breed not found!");
-        }
-
-        if (0 === data.message.length) {
-          const p = document.createElement("p");
-          p.innerText = "No sub-breeds found!";
-          content.append(p);
-        } else {
-          const arr = data.message;
-
-          // Ordered list creation to use arr and appending to content div
-          const list = document.createElement("ol");
-          content.append(list);
-          for (let item in arr) {
-            const li = document.createElement("li");
-            li.innerText = arr[item];
-            list.append(li);
-          }
-        }
-
-        // data names inside arr
-      } catch (error) {
-        const p = document.createElement("p");
-        p.innerText = "Breed not found!";
-        content.append(p);
-      }
-    }
-
-    async function getAllBreeds() {
-      content.innerHTML = "";
-
-      const response = await fetch("https://dog.ceo/api/breeds/list/all");
-      const data = await response.json();
-      const dataList = data.message;
-      const oList = document.createElement("ol");
-
-      for (const key in dataList) {
-        const li = document.createElement("li");
-        li.innerText = key;
-
-        if (dataList[key].length !== 0) {
-          const uList = document.createElement("ul");
-          for (const item of dataList[key]) {
-            const li = document.createElement("li");
-            li.innerText = item;
-            uList.appendChild(li);
-          }
-          li.appendChild(uList);
-        }
-        oList.append(li);
-      }
-      content.append(oList);
-    }
-
-    randomBtn.addEventListener("click", getRandomDog);
-    showBreedBtn.addEventListener("click", () =>
-      getBreedImages(inputBreed.value.toLowerCase())
-    );
-    subBreedBtn.addEventListener("click", () =>
-      getSubBreed(inputBreed.value.toLowerCase())
-    );
-    showAllBtn.addEventListener("click", () => getAllBreeds());
-  </script>
 </html>
