@@ -10,23 +10,24 @@
     <label for="input-breed">Breed</label>
     <input type="text" id="input-breed" placeholder="Enter a breed" />
     <button id="button-show-breed">Show Breed</button>
+    <button id="button-show-sub-breed">Show Sub-Breed</button>
     <div id="content"></div>
   </body>
   <script>
     const content = document.getElementById("content");
     const img = document.createElement("img");
-    const btn = document.getElementById("button-random-dog");
+    const randomBtn = document.getElementById("button-random-dog");
+    const subBreedBtn = document.getElementById("button-show-sub-breed");
     async function getRandomDog() {
       content.innerHTML = "";
       const response = await fetch("https://dog.ceo/api/breeds/image/random");
       const data = await response.json();
       img.src = data.message;
-      content.appendChild(img);
-      console.log(data);
+      content.append(img);
       return 0;
     }
 
-    const showBreedbtn = document.getElementById("button-show-breed");
+    const showBreedBtn = document.getElementById("button-show-breed");
     const inputBreed = document.getElementById("input-breed");
 
     async function getBreedImages(breed) {
@@ -39,20 +40,57 @@
           throw new Error("Breed not found!");
         }
 
-        console.log(data);
         img.src = data.message[0];
-        content.appendChild(img);
+        content.append(img);
       } catch (error) {
         const p = document.createElement("p");
         p.innerText = "Breed not found!";
-        content.appendChild(p);
+        content.append(p);
       }
       return 0;
     }
 
-    showBreedbtn.addEventListener("click", () =>
+    async function getSubBreed(breed) {
+      content.innerHTML = "";
+      try {
+        const response = await fetch(`https://dog.ceo/api/breed/${breed}/list
+`);
+        const data = await response.json();
+        if (data.code === 404) {
+          throw new Error("Breed not found!");
+        }
+
+        if (0 === data.message.length) {
+          const p = document.createElement("p");
+          p.innerText = "No sub-breeds found!";
+          content.append(p);
+        } else {
+          const arr = data.message;
+
+          // Ordered list creation to use arr and appending to content div
+          const list = document.createElement("ol");
+          content.append(list);
+          for (let item in arr) {
+            const li = document.createElement("li");
+            li.innerText = arr[item];
+            list.append(li);
+          }
+        }
+
+        // data names inside arr
+      } catch (error) {
+        const p = document.createElement("p");
+        p.innerText = "Breed not found!";
+        content.append(p);
+      }
+    }
+
+    randomBtn.addEventListener("click", getRandomDog);
+    showBreedBtn.addEventListener("click", () =>
       getBreedImages(inputBreed.value.toLowerCase())
     );
-    btn.addEventListener("click", getRandomDog);
+    subBreedBtn.addEventListener("click", () =>
+      getSubBreed(inputBreed.value.toLowerCase())
+    );
   </script>
 </html>
